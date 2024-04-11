@@ -11,7 +11,6 @@ blockchain = SupplyChainBlockchain()
 # @app.route("/add/user", methods=['POST'])
 # def add_user():
     
-    
 
 @app.route("/users", methods = ['GET'])
 def showUsers():
@@ -38,12 +37,21 @@ def register():
 @app.route("/add/transaction", methods=['POST'])
 def list_transactions():
     data = request.json
-    client = data.get('client')
+    client = data.get('receiver')
     product = data.get('product')
-    distributor = data.get('distributor')
+    distributor = data.get('sender')
+    # print(distributor)
+    amount = data.get('amount', 0)
+    signature = data.get('signature')
 
-    if distributor not in blockchain.participants:
+    if distributor not in blockchain.nodes:
         return jsonify({"error":"Distributor does not exist in this blockchain"})
+    
+    if 'property' in distributor and product in distributor['property']:
+        blockchain.create_transaction(sender=distributor, receiver=client, product=product,amount=amount, signature=signature)
+        return jsonify("transaction added"),200
+    else:
+        return jsonify("distributor does not own this properties"),201
 
     
 
