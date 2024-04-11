@@ -22,12 +22,30 @@ def showUsers():
 
     return jsonify(response),200
 
+@app.route("/register",methods=['POST'])
+def register():
+    users = request.json
+    blockchain.node(users)
+    response={
+        'message':"the following participants have been added",
+        'participants':users
+    }
 
-# @app.route("/add/transaction", methods=['POST'])
-# def add_transaction():
+    return jsonify(response),200
 
-# @app.route("/transactions", methods=['GET'])
-# def list_transactions():
+
+
+@app.route("/add/transaction", methods=['POST'])
+def list_transactions():
+    data = request.json
+    client = data.get('client')
+    product = data.get('product')
+    distributor = data.get('distributor')
+
+    if distributor not in blockchain.participants:
+        return jsonify({"error":"Distributor does not exist in this blockchain"})
+
+    
 
 # @app.route("/mine", methods=['GET'])
 # def mine_block():
