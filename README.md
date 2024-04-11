@@ -2,7 +2,8 @@
 # Supply chain management
 
 ## Routes defined:
-1. /users
-2. /mine
-3. /chain
-4. /add/transaction
+1. /register
+2. /users
+3. /mine
+4. /chain
+5. /add/transaction
