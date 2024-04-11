@@ -1,16 +1,16 @@
 import hashlib
 import hmac
 import json
-import time
+import time  # Add this import statement
 
 from merkletree import MerkleTree
 
 SECRET_KEY = "your_secret_key_here"
 
-class blockchain:
+class SupplyChainBlockchain:
     def __init__(self):
         self.chain=[]
-        self.curr_transactios=[]
+        self.curr_transactions=[]
         self.nodes=dict()
 
         self.create_genesis_block()
@@ -23,14 +23,14 @@ class blockchain:
         
         block = {
             'index': len(self.chain) + 1,
-            'timestamp': time(),
-            'transactions': self.current_transactions,
+            'timestamp': time.time(),  # Use time.time() instead of time()
+            'transactions': self.curr_transactions,
             'proof': proof,
             'previous_hash': previous_hash or self.hash(self.chain[-1]),
-            'merkle_root': self.generate_merkle_root(self.current_transactions),
+            'merkle_root': self.generate_merkle_root(self.curr_transactions),
         }
 
-        self.current_transactions = []
+        self.curr_transactions = []
         self.chain.append(block)
         return block
     # Generate the Merkle root of transactions
