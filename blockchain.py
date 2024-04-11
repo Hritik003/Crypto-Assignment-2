@@ -52,11 +52,12 @@ class SupplyChainBlockchain:
         return mt.generate_merkle_root()
     
 
-    def create_transaction(self, sender, receiver, amount, signature):
+    def create_transaction(self, sender, receiver,product, amount, signature):
 
         transaction = {
             'sender': sender,
             'receiver': receiver,
+            'product':product,
             'amount': amount,
             'message': f'{sender}{receiver}{amount}', 
             'signature': signature,  
