@@ -1,6 +1,7 @@
 import hashlib
 import hmac
 import json
+import random
 import time  # Add this import statement
 
 from merkletree import MerkleTree
@@ -9,11 +10,16 @@ SECRET_KEY = "your_secret_key_here"
 
 class SupplyChainBlockchain:
     def __init__(self):
+        self.nonce = random.randint(100,999)
         self.chain=[]
         self.curr_transactions=[]
         self.nodes=dict()
 
         self.create_genesis_block()
+    
+    def node(self, nodes):
+        
+        self.nodes.update(nodes)
     
     def create_genesis_block(self):
         block = self.create_block(proof=100, previous_hash='1')
@@ -28,6 +34,7 @@ class SupplyChainBlockchain:
             'proof': proof,
             'previous_hash': previous_hash or self.hash(self.chain[-1]),
             'merkle_root': self.generate_merkle_root(self.curr_transactions),
+            'nonce':self.nonce
         }
 
         self.curr_transactions = []
@@ -59,6 +66,7 @@ class SupplyChainBlockchain:
         if not self.verify_transaction(transaction, SECRET_KEY):
             raise Exception('Invalid transaction')
         
+        self.nonce = random.randint(100,999)
         self.current_transactions.append(transaction)
         
     def proof_of_work(self, last_proof):
@@ -90,7 +98,5 @@ class SupplyChainBlockchain:
 
         message = transaction.get('message')
         signature = transaction.get('signature')
-
         hmac_generated = hmac.new(secret_key.encode(), message.encode(), hashlib.sha256).hexdigest()
-        
         return hmac.compare_digest(hmac_generated, signature)
