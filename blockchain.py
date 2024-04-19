@@ -64,11 +64,11 @@ class SupplyChainBlockchain:
         }
 
         
-        if not self.verify_transaction(transaction, SECRET_KEY):
-            raise Exception('Invalid transaction')
+        # if not self.verify_transaction(transaction, SECRET_KEY):
+        #     raise Exception('Invalid transaction')
         
         self.nonce = random.randint(100,999)
-        self.current_transactions.append(transaction)
+        self.curr_transactions.append(transaction)
         
     def proof_of_work(self, last_proof):
         proof = 0

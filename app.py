@@ -37,14 +37,20 @@ def list_transactions():
     client = data.get('receiver')
     product = data.get('product')
     distributor = data.get('sender')
-    # print(distributor)
+  
     amount = data.get('amount', 0)
     signature = data.get('signature')
 
     if distributor not in blockchain.nodes:
         return jsonify({"error":"Distributor does not exist in this blockchain"})
+
+    dis = blockchain.nodes[distributor]
+    # print(dis)
+
+    # if 'property' in dis:
+    #     return jsonify("check 1"),200
     
-    if 'property' in distributor and product in distributor['property']:
+    if  'property' in dis and product in dis['property']:
         blockchain.create_transaction(sender=distributor, receiver=client, product=product,amount=amount, signature=signature)
         return jsonify("transaction added"),200
     else:
