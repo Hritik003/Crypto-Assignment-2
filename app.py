@@ -1,15 +1,12 @@
 from flask import Flask, jsonify,redirect, request, send_file, url_for
 import json
-# from django.http import response
-from flask import jsonify  # For JSON responses
+
+from flask import jsonify  
 from blockchain import SupplyChainBlockchain
 
-#intitializing flask
+
 app = Flask(__name__)
 blockchain = SupplyChainBlockchain()
-
-# @app.route("/add/user", methods=['POST'])
-# def add_user():
     
 
 @app.route("/users", methods = ['GET'])
@@ -66,14 +63,6 @@ def get_chain():
     }
     return jsonify(response),200
 
-# @app.route("/register/node", methods=['POST'])
-# def register_node():
-
-# @app.route("/resolve", methods=['GET'])
-# def resolve_conflicts():
-
-# @app.route("/product/<product_id>", methods=['GET'])
-# def view_product_history(product_id):
 
 if __name__ == '__main__':
     from argparse import ArgumentParser
