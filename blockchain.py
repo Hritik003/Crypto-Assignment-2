@@ -3,6 +3,7 @@ import hmac
 import json
 import random
 import time  # Add this import statement
+import os
 
 from merkletree import MerkleTree
 
@@ -94,10 +95,31 @@ class SupplyChainBlockchain:
         
     def nodes(self, users):
         self.users.update(users)
-        
+    
+    def generate_challenge(self):
+        return os.urandom(16).hex
+
+    def create_response(self, challenge, reply_bit):
+        appended_challenge_bit = f"{challenge}{reply_bit}".encode()
+        return hmac.new(SECRET_KEY.encode(), appended_challenge_bit, hashlib.sha256).hexdigest()
+    
+    def verify_response(self, challenge, reply_bit, response):
+        challenge_bit = f"{challenge}{reply_bit}".encode()
+        expected_hmac = hmac.new(SECRET_KEY.encode(), challenge_bit, hashlib.sha256).hexdigest()
+        return hmac.compare_digest(expected_hmac, response)
+    
+
     def verify_transaction(self, transaction, secret_key):
 
         message = transaction.get('message')
         signature = transaction.get('signature')
         hmac_generated = hmac.new(secret_key.encode(), message.encode(), hashlib.sha256).hexdigest()
         return hmac.compare_digest(hmac_generated, signature)
+
+blockchain = SupplyChainBlockchain()
+challenge = blockchain.generate_challenge()
+print("The challenge is:", challenge)
+bit = 0
+response = blockchain.create_response(challenge, bit)
+valid = blockchain.verify_response(challenge, bit, response)
+print("Is the response valid?", valid)
