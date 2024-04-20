@@ -1,3 +1,4 @@
+from secrets import token_hex
 from flask import Flask, jsonify,redirect, request, send_file, url_for
 import json
 
@@ -21,7 +22,13 @@ def showUsers():
 @app.route("/register",methods=['POST'])
 def register():
     users = request.json
-    blockchain.node(users)
+    new_users = {}
+    for user, details in users.items():
+
+        secret_key = token_hex(16) 
+        new_users[user] = {**details, 'secret_key': secret_key}
+
+    blockchain.node(new_users)
     response={
         'message':"the following participants have been added",
         'participants':users
@@ -33,25 +40,22 @@ def register():
 
 @app.route("/add/transaction", methods=['POST'])
 def list_transactions():
+    # client - bob, distributor - alice
     data = request.json
     client = data.get('receiver')
     product = data.get('product')
     distributor = data.get('sender')
   
     amount = data.get('amount', 0)
-    signature = data.get('signature')
 
     if distributor not in blockchain.nodes:
         return jsonify({"error":"Distributor does not exist in this blockchain"})
 
     dis = blockchain.nodes[distributor]
-    # print(dis)
 
-    # if 'property' in dis:
-    #     return jsonify("check 1"),200
     
     if  'property' in dis and product in dis['property']:
-        blockchain.create_transaction(sender=distributor, receiver=client, product=product,amount=amount, signature=signature)
+        blockchain.create_transaction(sender=distributor, receiver=client, product=product,amount=amount)
         return jsonify("transaction added"),200
     else:
         return jsonify("distributor does not own this properties"),201
