@@ -15,11 +15,9 @@ class SupplyChainBlockchain:
         self.chain=[]
         self.curr_transactions=[]
         self.nodes=dict()
-
         self.create_genesis_block()
     
     def node(self, nodes):
-        
         self.nodes.update(nodes)
     
     def create_genesis_block(self):
@@ -27,7 +25,6 @@ class SupplyChainBlockchain:
         return block
         
     def create_block(self, proof, previous_hash):
-        
         block = {
             'index': len(self.chain) + 1,
             'timestamp': time.time(),  # Use time.time() instead of time()
@@ -37,11 +34,10 @@ class SupplyChainBlockchain:
             'merkle_root': self.generate_merkle_root(self.curr_transactions),
             'nonce':self.nonce
         }
-
         self.curr_transactions = []
         self.chain.append(block)
         return block
-    # Generate the Merkle root of transactions
+
 
     def generate_merkle_root(self, transactions):
         mt = MerkleTree()
@@ -53,22 +49,29 @@ class SupplyChainBlockchain:
         return mt.generate_merkle_root()
     
 
-    def create_transaction(self, sender, receiver,product, amount, signature):
+    def create_transaction(self, sender, receiver,product, amount):
+        challenge = self.generate_challenge
+        print(challenge)
+        message = f"{sender}{receiver}{product}{amount}"
+        print(message)
+        bit = random.randint(0,1)
+        print(bit)
+        
+        secret_key = self.nodes[sender]['secret_key']
+        print(secret_key)
+        response = self.create_response(message,secret_key, challenge, bit)
+        print(response)
 
         transaction = {
             'sender': sender,
             'receiver': receiver,
             'product':product,
             'amount': amount,
-            'message': f'{sender}{receiver}{amount}', 
-            'signature': signature,  
         }
 
-        
-        # if not self.verify_transaction(transaction, SECRET_KEY):
-        #     raise Exception('Invalid transaction')
-        
-        self.nonce = random.randint(100,999)
+        if not self.verify_response(message, secret_key,challenge, bit, response):
+            raise Exception('Invalid transaction')
+
         self.curr_transactions.append(transaction)
         
     def proof_of_work(self, last_proof):
@@ -96,17 +99,20 @@ class SupplyChainBlockchain:
     def nodes(self, users):
         self.users.update(users)
     
-    def generate_challenge(self):
-        return os.urandom(16).hex
+    def verify_response(self, message, secret_key, challenge, bit, response):
+        expected_response = self.create_response(message, secret_key, challenge, bit)  
+        print(expected_response)
+        return response == expected_response  
 
-    def create_response(self, challenge, reply_bit):
-        appended_challenge_bit = f"{challenge}{reply_bit}".encode()
-        return hmac.new(SECRET_KEY.encode(), appended_challenge_bit, hashlib.sha256).hexdigest()
-    
-    def verify_response(self, challenge, reply_bit, response):
-        challenge_bit = f"{challenge}{reply_bit}".encode()
-        expected_hmac = hmac.new(SECRET_KEY.encode(), challenge_bit, hashlib.sha256).hexdigest()
-        return hmac.compare_digest(expected_hmac, response)
+    def generate_challenge(self):
+        return os.urandom(16).hex()  
+
+    def create_response(self,message, secret_key, challenge, bit):
+
+        # secret_key = self.nodes[node_id]['secret_key']
+        challenge_bit_combo = f"{message}{challenge}{bit}".encode()
+        return hmac.new(secret_key.encode(), challenge_bit_combo, hashlib.sha256).hexdigest()
+
     
 
     # def verify_transaction(self, transaction, secret_key):
@@ -114,11 +120,29 @@ class SupplyChainBlockchain:
     #     signature = transaction.get('signature')
     #     hmac_generated = hmac.new(secret_key.encode(), message.encode(), hashlib.sha256).hexdigest()
     #     return hmac.compare_digest(hmac_generated, signature)
-
+# Assuming this is in the same script or that you've imported your blockchain class
 # blockchain = SupplyChainBlockchain()
-# challenge = blockchain.generate_challenge()
-# print("The challenge is:", challenge)
-# bit = 0
-# response = blockchain.create_response(challenge, bit)
-# valid = blockchain.verify_response(challenge, bit, response)
-# print("Is the response valid?", valid)
+
+# # Registering some sample nodes with secret keys
+# blockchain.nodes['Alice'] = {'secret_key': 'alice_secret_key'}
+# blockchain.nodes['Bob'] = {'secret_key': 'bob_secret_key'}
+
+# # Now, let's simulate a transaction
+# sender = 'Alice'
+# receiver = 'Bob'
+# product = 'Blockchain Book'
+# amount = 1
+
+# # We will try to create and verify a transaction
+# try:
+#     # This method internally creates a challenge, generates a response, and verifies it
+#     blockchain.create_transaction(sender, receiver, product, amount)
+#     print("Transaction successfully verified and added to the blockchain!")
+# except Exception as e:
+#     print(f"Failed to add transaction: {e}")
+
+# # Optionally, print out the current state of the blockchain transactions to see the result
+# print("Current transactions in the blockchain:")
+# for transaction in blockchain.curr_transactions:
+#     print(transaction)
+
