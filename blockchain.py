@@ -109,17 +109,16 @@ class SupplyChainBlockchain:
         return hmac.compare_digest(expected_hmac, response)
     
 
-    def verify_transaction(self, transaction, secret_key):
+    # def verify_transaction(self, transaction, secret_key):
+    #     message = transaction.get('message')
+    #     signature = transaction.get('signature')
+    #     hmac_generated = hmac.new(secret_key.encode(), message.encode(), hashlib.sha256).hexdigest()
+    #     return hmac.compare_digest(hmac_generated, signature)
 
-        message = transaction.get('message')
-        signature = transaction.get('signature')
-        hmac_generated = hmac.new(secret_key.encode(), message.encode(), hashlib.sha256).hexdigest()
-        return hmac.compare_digest(hmac_generated, signature)
-
-blockchain = SupplyChainBlockchain()
-challenge = blockchain.generate_challenge()
-print("The challenge is:", challenge)
-bit = 0
-response = blockchain.create_response(challenge, bit)
-valid = blockchain.verify_response(challenge, bit, response)
-print("Is the response valid?", valid)
+# blockchain = SupplyChainBlockchain()
+# challenge = blockchain.generate_challenge()
+# print("The challenge is:", challenge)
+# bit = 0
+# response = blockchain.create_response(challenge, bit)
+# valid = blockchain.verify_response(challenge, bit, response)
+# print("Is the response valid?", valid)
