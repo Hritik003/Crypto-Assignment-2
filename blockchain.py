@@ -114,35 +114,3 @@ class SupplyChainBlockchain:
         return hmac.new(secret_key.encode(), challenge_bit_combo, hashlib.sha256).hexdigest()
 
     
-
-    # def verify_transaction(self, transaction, secret_key):
-    #     message = transaction.get('message')
-    #     signature = transaction.get('signature')
-    #     hmac_generated = hmac.new(secret_key.encode(), message.encode(), hashlib.sha256).hexdigest()
-    #     return hmac.compare_digest(hmac_generated, signature)
-# Assuming this is in the same script or that you've imported your blockchain class
-# blockchain = SupplyChainBlockchain()
-
-# # Registering some sample nodes with secret keys
-# blockchain.nodes['Alice'] = {'secret_key': 'alice_secret_key'}
-# blockchain.nodes['Bob'] = {'secret_key': 'bob_secret_key'}
-
-# # Now, let's simulate a transaction
-# sender = 'Alice'
-# receiver = 'Bob'
-# product = 'Blockchain Book'
-# amount = 1
-
-# # We will try to create and verify a transaction
-# try:
-#     # This method internally creates a challenge, generates a response, and verifies it
-#     blockchain.create_transaction(sender, receiver, product, amount)
-#     print("Transaction successfully verified and added to the blockchain!")
-# except Exception as e:
-#     print(f"Failed to add transaction: {e}")
-
-# # Optionally, print out the current state of the blockchain transactions to see the result
-# print("Current transactions in the blockchain:")
-# for transaction in blockchain.curr_transactions:
-#     print(transaction)
-
