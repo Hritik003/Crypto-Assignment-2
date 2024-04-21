@@ -35,3 +35,33 @@
     5. ```
         http://127.0.0.1:5001/chain
         ```
+## Sample testcase to run:
+1. To register a node:
+    ```json
+        {
+            "M1": {
+                "name": "Manufacturer1",
+                "type": "Manufacturer"
+            },
+            "d2": {
+                "name": "Distributor2",
+                "type": "distributor",
+                "id": "D2",
+                "property": ["normal-chair", "office-chair"]
+            },
+            "c1": {
+                "name": "Client1",
+                "type": "client",
+                "id": "C1"
+            },
+        }
+    ```
+2. To add a new Transaction:
+    ```json
+    {
+        "sender":"d1",
+        "client":"c1",
+        "product":"wood",
+        "amount":20
+    }
+    ```
