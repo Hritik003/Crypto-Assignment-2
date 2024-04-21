@@ -21,22 +21,34 @@ class SupplyChainBlockchain:
         self.nodes.update(nodes)
     
     def create_genesis_block(self):
-        block = self.create_block(proof=100, previous_hash='1')
+
+        self.curr_transactions = []
+        self.nonce = random.randint(100, 999)
+        block = self.create_block()
+        block['proof'] = 100  
+        block['previous_hash'] = '1'  
         return block
+
         
-    def create_block(self, proof, previous_hash):
+    def create_block(self):
+
+        last_block = self.chain[-1] if self.chain else None
+        last_proof = last_block['proof'] if last_block else 0
+        proof = self.proof_of_work(last_proof)
+        previous_hash = self.hash(last_block)
         block = {
             'index': len(self.chain) + 1,
-            'timestamp': time.time(),  # Use time.time() instead of time()
+            'timestamp': time.time(),
             'transactions': self.curr_transactions,
             'proof': proof,
-            'previous_hash': previous_hash or self.hash(self.chain[-1]),
+            'previous_hash': previous_hash,
             'merkle_root': self.generate_merkle_root(self.curr_transactions),
-            'nonce':self.nonce
+            'nonce': self.nonce
         }
         self.curr_transactions = []
         self.chain.append(block)
         return block
+
 
 
     def generate_merkle_root(self, transactions):
@@ -51,14 +63,14 @@ class SupplyChainBlockchain:
 
     def create_transaction(self, sender, receiver,product, amount):
         challenge = self.generate_challenge
-        print(challenge)
+        print("the challenge generated is {challenge}")
         message = f"{sender}{receiver}{product}{amount}"
-        print(message)
+        print("the message recieved is {message}")
         bit = random.randint(0,1)
-        print(bit)
+        print("the bit from the system {bit}")
         
         secret_key = self.nodes[sender]['secret_key']
-        print(secret_key)
+        print("the secret key of the user involved in the transaction : {secret_key}")
         response = self.create_response(message,secret_key, challenge, bit)
         print(response)
 
@@ -89,6 +101,7 @@ class SupplyChainBlockchain:
         guess_hash = hashlib.sha256(guess).hexdigest()
         return guess_hash[:4] == "0000"
         
+    @staticmethod
     def hash(block):
         block_string = json.dumps(block, sort_keys=True).encode()
         return hashlib.sha256(block_string).hexdigest()
