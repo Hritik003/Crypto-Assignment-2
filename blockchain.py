@@ -7,7 +7,6 @@ import os
 
 from merkletree import MerkleTree
 
-SECRET_KEY = "your_secret_key_here"
 
 class SupplyChainBlockchain:
     def __init__(self):
@@ -28,35 +27,32 @@ class SupplyChainBlockchain:
         block['proof'] = 100  
         block['previous_hash'] = '1'  
         return block
-
         
     def create_block(self):
+        if self.chain:
+            last_block = self.chain[-1]
+            previous_hash = self.hash(last_block)
+        else:
+            previous_hash = '1'
 
-        last_block = self.chain[-1] if self.chain else None
-        last_proof = last_block['proof'] if last_block else 0
-        proof = self.proof_of_work(last_proof)
-        previous_hash = self.hash(last_block)
         block = {
             'index': len(self.chain) + 1,
             'timestamp': time.time(),
             'transactions': self.curr_transactions,
-            'proof': proof,
             'previous_hash': previous_hash,
-            'merkle_root': self.generate_merkle_root(self.curr_transactions),
-            'nonce': self.nonce
+            'nonce': 0, 
+            'merkle_root': self.generate_merkle_root(self.curr_transactions)
         }
+
+        block['nonce'] = self.proof_of_work(block)
         self.curr_transactions = []
         self.chain.append(block)
         return block
 
-
-
     def generate_merkle_root(self, transactions):
         mt = MerkleTree()
-        for tx in transactions:
-            tx_string = json.dumps(tx, sort_keys=True)
-            tx_hex = tx_string.encode('utf-8').hex()
-            mt.add_leaf(tx_hex)
+        transaction_hashes = [hashlib.sha256(json.dumps(tx, sort_keys=True).encode()).hexdigest() for tx in transactions]
+        mt.add_leaf(transaction_hashes, do_hash=False)
         mt.make_tree()
         return mt.generate_merkle_root()
     
@@ -86,11 +82,15 @@ class SupplyChainBlockchain:
 
         self.curr_transactions.append(transaction)
         
-    def proof_of_work(self, last_proof):
-        proof = 0
-        while self.valid_proof(last_proof, proof) is False:
-            proof += 1
-        return proof
+    def proof_of_work(self, block):
+        block['nonce'] = 0
+        while True:
+            block_hash = self.hash(block)
+            if block_hash.startswith('0000'):
+                return block['nonce']
+            else:
+                block['nonce'] += 1
+
         
     @staticmethod
     def valid_proof(last_proof, proof):
