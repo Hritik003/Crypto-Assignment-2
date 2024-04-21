@@ -62,8 +62,22 @@ def list_transactions():
 
     
 
-# @app.route("/mine", methods=['GET'])
-# def mine_block():
+@app.route("/mine", methods=['GET'])
+def mine_block():
+    block = blockchain.create_block()
+    response = {
+        'message': 'New Block Mined!',
+        'index': block['index'],
+        'timestamp': block['timestamp'],
+        'transactions': block['transactions'],
+        'merkle_root': block['merkle_root'],
+        'previous_hash': block['previous_hash'],
+        'proof': block['proof']
+    }
+
+    print("Transactions in the new block:", len(block['transactions']))
+    return jsonify(response), 200
+
 
 @app.route("/chain", methods=['GET'])
 def get_chain():
