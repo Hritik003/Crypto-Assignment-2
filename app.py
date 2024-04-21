@@ -9,6 +9,20 @@ from blockchain import SupplyChainBlockchain
 app = Flask(__name__)
 blockchain = SupplyChainBlockchain()
     
+@app.route('/view_user/<user_id>', methods=['GET'])
+def view_user(user_id):
+    user_transactions = []
+    for transaction in blockchain.curr_transactions:
+        if transaction['sender'] == user_id or transaction['receiver'] == user_id:
+            user_transactions.append(transaction)
+
+    if not user_transactions:
+        return jsonify({'message': 'No transactions found for this user.'}), 404
+
+    return jsonify({
+        'user_id': user_id,
+        'transactions': user_transactions
+    }), 200
 
 @app.route("/users", methods = ['GET'])
 def showUsers():
@@ -36,13 +50,20 @@ def register():
 
     return jsonify(response),200
 
+@app.route("/list/transaction",methods=['GET'])
+def list_transactions():
+    trans = blockchain.curr_transactions
+    response={
+        'transactions':trans
 
+    }
+    return jsonify(response),200
 
 @app.route("/add/transaction", methods=['POST'])
-def list_transactions():
+def create_transactions():
     # client - bob, distributor - alice
     data = request.json
-    client = data.get('receiver')
+    client = data.get('client')
     product = data.get('product')
     distributor = data.get('sender')
   
@@ -60,7 +81,6 @@ def list_transactions():
     else:
         return jsonify("distributor does not own this properties"),201
 
-    
 
 @app.route("/mine", methods=['GET'])
 def mine_block():
@@ -72,7 +92,6 @@ def mine_block():
         'transactions': block['transactions'],
         'merkle_root': block['merkle_root'],
         'previous_hash': block['previous_hash'],
-        'proof': block['proof']
     }
 
     print("Transactions in the new block:", len(block['transactions']))
