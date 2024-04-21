@@ -25,7 +25,8 @@ class SupplyChainBlockchain:
         self.nonce = random.randint(100, 999)
         block = self.create_block()
         block['proof'] = 100  
-        block['previous_hash'] = '1'  
+        random_data = os.urandom(64)  # Generate 64 random bytes
+        block['previous_hash'] = hashlib.sha256(random_data).hexdigest()
         return block
         
     def create_block(self):
