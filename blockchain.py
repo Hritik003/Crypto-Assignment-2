@@ -91,16 +91,6 @@ class SupplyChainBlockchain:
                 return block['nonce']
             else:
                 block['nonce'] += 1
-
-        
-    # @staticmethod
-    # def valid_proof(last_proof, proof):
-    #     """
-    #     Validates the Proof: Does hash(last_proof, proof) contain 4 leading zeroes?
-    #     """
-    #     guess = f'{last_proof}{proof}'.encode()
-    #     guess_hash = hashlib.sha256(guess).hexdigest()
-    #     return guess_hash[:4] == "0000"
         
     @staticmethod
     def hash(block):
