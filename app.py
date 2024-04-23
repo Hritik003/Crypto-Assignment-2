@@ -10,7 +10,7 @@ app = Flask(__name__)
 blockchain = SupplyChainBlockchain()
     
 @app.route('/view_user/<user_id>', methods=['GET'])
-def view_user(user_id):
+def viewUser(user_id):
     user_transactions = []
     for transaction in blockchain.curr_transactions:
         if transaction['sender'] == user_id or transaction['receiver'] == user_id:
