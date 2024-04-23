@@ -7,7 +7,6 @@ import os
 
 from merkletree import MerkleTree
 
-
 class SupplyChainBlockchain:
     def __init__(self):
         self.nonce = random.randint(100,999)
@@ -59,12 +58,13 @@ class SupplyChainBlockchain:
     
 
     def create_transaction(self, sender, receiver,product, amount):
-        challenge = self.generate_challenge
-        print("the challenge generated is {challenge}")
+        challenge = self.generate_challenge()
+        print(f"the challenge generated is {challenge}")
         message = f"{sender}{receiver}{product}{amount}"
-        print("the message recieved is {message}")
-        bit = random.randint(0,1)
-        print("the bit from the system {bit}")
+        print(f"the message received is {message}")
+        bit = random.randint(0, 1)
+        print(f"the bit from the system {bit}")
+
         
         secret_key = self.nodes[sender]['secret_key']
         print("the secret key of the user involved in the transaction : {secret_key}")
@@ -80,7 +80,7 @@ class SupplyChainBlockchain:
 
         if not self.verify_response(message, secret_key,challenge, bit, response):
             raise Exception('Invalid transaction')
-
+        print("Transaction successfully verified through hmac")
         self.curr_transactions.append(transaction)
         
     def proof_of_work(self, block):
@@ -93,14 +93,14 @@ class SupplyChainBlockchain:
                 block['nonce'] += 1
 
         
-    @staticmethod
-    def valid_proof(last_proof, proof):
-        """
-        Validates the Proof: Does hash(last_proof, proof) contain 4 leading zeroes?
-        """
-        guess = f'{last_proof}{proof}'.encode()
-        guess_hash = hashlib.sha256(guess).hexdigest()
-        return guess_hash[:4] == "0000"
+    # @staticmethod
+    # def valid_proof(last_proof, proof):
+    #     """
+    #     Validates the Proof: Does hash(last_proof, proof) contain 4 leading zeroes?
+    #     """
+    #     guess = f'{last_proof}{proof}'.encode()
+    #     guess_hash = hashlib.sha256(guess).hexdigest()
+    #     return guess_hash[:4] == "0000"
         
     @staticmethod
     def hash(block):
@@ -113,6 +113,7 @@ class SupplyChainBlockchain:
     def nodes(self, users):
         self.users.update(users)
     
+    # hmac functions
     def verify_response(self, message, secret_key, challenge, bit, response):
         expected_response = self.create_response(message, secret_key, challenge, bit)  
         print(expected_response)
