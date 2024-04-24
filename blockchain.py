@@ -23,9 +23,10 @@ class SupplyChainBlockchain:
         self.curr_transactions = []
         self.nonce = random.randint(100, 999)
         block = self.create_block()
-        block['proof'] = 100  
+        # block['proof'] = 100  
         random_data = os.urandom(64)  # Generate 64 random bytes
         block['previous_hash'] = hashlib.sha256(random_data).hexdigest()
+        block['merkle_root'] = hashlib.sha256(str({block['timestamp']}).encode()).hexdigest()
         return block
         
     def create_block(self):
@@ -67,9 +68,9 @@ class SupplyChainBlockchain:
 
         
         secret_key = self.nodes[sender]['secret_key']
-        print("the secret key of the user involved in the transaction : {secret_key}")
+        print(f"the secret key of the user involved in the transaction : {secret_key}")
         response = self.create_response(message,secret_key, challenge, bit)
-        print(response)
+        print(f"bob (system) response is {response}")
 
         transaction = {
             'sender': sender,
@@ -106,7 +107,7 @@ class SupplyChainBlockchain:
     # hmac functions
     def verify_response(self, message, secret_key, challenge, bit, response):
         expected_response = self.create_response(message, secret_key, challenge, bit)  
-        print(expected_response)
+        print(f"Alice (client) response is {expected_response}")
         return response == expected_response  
 
     def generate_challenge(self):
