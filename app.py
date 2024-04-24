@@ -60,6 +60,7 @@ def list_transactions():
     return jsonify(response),200
 
 @app.route("/add/transaction", methods=['POST'])
+
 def create_transactions():
     # client - bob, distributor - alice
     data = request.json
@@ -71,11 +72,10 @@ def create_transactions():
 
     if distributor not in blockchain.nodes:
         return jsonify({"error":"Distributor does not exist in this blockchain"})
+    if client not in blockchain.nodes:
+        return jsonify({"error":"client does not exist in this blockchain"})
 
-    dis = blockchain.nodes[distributor]
-
-    
-    if  'property' in dis and product in dis['property']:
+    if  'property' in blockchain.nodes[distributor] and product in blockchain.nodes[distributor]['property']:
         blockchain.create_transaction(sender=distributor, receiver=client, product=product,amount=amount)
         return jsonify("transaction added"),200
     else:
